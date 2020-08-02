@@ -54,30 +54,4 @@ public class S3ClientConfiguration {
         }
     }
 
-//    public boolean putObject(String fileName, DataBuffer dataBuffer) {
-//        PutObjectRequest putObjectRequest = PutObjectRequest
-//                .builder()
-//                .bucket(bucket)
-//                .key(fileName)
-//                .acl(ObjectCannedACL.PUBLIC_READ_WRITE)
-//                .build();
-//        PutObjectResponse response = s3Client.putObject(putObjectRequest, RequestBody.fromByteBuffer(dataBuffer.asByteBuffer()));
-//        return response
-//                .sdkHttpResponse()
-//                .statusCode() == 200;
-//    }
-//
-//    public boolean deleteObject(String fileName) {
-//        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest
-//                .builder()
-//                .bucket(bucket)
-//                .key(fileName)
-//                .build();
-//        DeleteObjectResponse response = s3Client.deleteObject(deleteObjectRequest);
-//        return response
-//                .sdkHttpResponse()
-//                .statusCode() == 202 || response.sdkHttpResponse().statusCode() == 200
-//                || response.sdkHttpResponse().statusCode() == 204;
-//    }
-
 }

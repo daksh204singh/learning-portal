@@ -96,29 +96,4 @@ public class CourseController {
                 }).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-//    @DeleteMapping("{id}/lectures/{lectureId}/deleteContent")
-//    public Mono<ResponseEntity<?>> deleteContent(@PathVariable String id,
-//                                                 @PathVariable String lectureId) {
-//        return repository.findById(id)
-//                .flatMap(course -> {
-//                    if (course.getLectures().containsKey(lectureId)) {
-//                        Lecture lecture = course.getLecture(lectureId);
-//                        boolean success = false;
-//                        try {
-//                            success = s3Util.deleteObject(lecture.getContentKey());
-//                        } catch (Exception e) {
-//                            System.out.println("CourseController::uploadLectureContent\n" +
-//                                    "Delete from S3 failed!\n" + ">> Exception: " + e);
-//                        }
-//                        if (success) {
-//                            lecture.setContentKey(null);
-//                            lecture.setContentUrl(null);
-//                            course.putLecture(lectureId, lecture);
-//                            return repository.save(course)
-//                                    .then(Mono.just(ResponseEntity.ok().<Void>build()));
-//                        } else return Mono.just(ResponseEntity.badRequest().build());
-//                    } else return Mono.just(ResponseEntity.notFound().build());
-//                }).defaultIfEmpty(ResponseEntity.notFound().build());
-//    }
-
 }
