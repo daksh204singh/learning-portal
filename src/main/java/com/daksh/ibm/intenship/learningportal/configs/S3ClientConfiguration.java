@@ -20,12 +20,6 @@ import java.time.Duration;
 @EnableConfigurationProperties(S3ClientConfigurationProperties.class)
 public class S3ClientConfiguration {
 
-    private S3AsyncClient s3AsyncClient;
-
-    public S3AsyncClient getS3Client() {
-        return s3AsyncClient;
-    }
-
     @Bean
     public S3AsyncClient s3Client(S3ClientConfigurationProperties s3props,
                                   AwsCredentialsProvider credentialsProvider) {

@@ -6,6 +6,9 @@ import org.springframework.data.annotation.Id;
 import org.joda.time.DateTime;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ToString
 @EqualsAndHashCode
@@ -23,31 +26,24 @@ public class Lecture {
 
     private String description;
 
-    private String contentKey;
-
-    private String contentUrl;
+    @JsonProperty
+    private Map<String, String> contentUrls;
 
     public Lecture() {
         createdDate = DateTime.now().toDate();
+        contentUrls = new HashMap<>();
     }
 
-    public Lecture(String id, String duration, Date createdDate, String name, String description, String contentKey, String contentUrl) {
+    public Lecture(String id, String duration, Date createdDate, String name, String description, Map<String, String> contentUrls) {
         this.id = id;
         this.duration = duration;
         this.createdDate = createdDate;
         this.name = name;
         this.description = description;
-        this.contentKey = contentKey;
-        this.contentUrl = contentUrl;
+        this.contentUrls = contentUrls;
     }
 
-    public String getContentKey() {
-        return contentKey;
-    }
 
-    public void setContentKey(String contentKey) {
-        this.contentKey = contentKey;
-    }
 
     public String getId() {
         return id;
@@ -89,11 +85,16 @@ public class Lecture {
         this.description = description;
     }
 
-    public String getContentUrl() {
-        return contentUrl;
+    public void putContent(String fileKey, String url) {
+        this.contentUrls.put(fileKey, url);
     }
 
-    public void setContentUrl(String contentUrl) {
-        this.contentUrl = contentUrl;
+    public Map<String, String> getContentUrls() {
+        return contentUrls;
     }
+
+    public void setContentUrls(Map<String, String> contentUrls) {
+        this.contentUrls = contentUrls;
+    }
+
 }

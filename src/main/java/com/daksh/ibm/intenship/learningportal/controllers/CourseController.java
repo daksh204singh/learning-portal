@@ -2,37 +2,20 @@ package com.daksh.ibm.intenship.learningportal.controllers;
 
 import com.daksh.ibm.intenship.learningportal.model.Course;
 import com.daksh.ibm.intenship.learningportal.model.Lecture;
-import com.daksh.ibm.intenship.learningportal.properties.S3ClientConfigurationProperties;
 import com.daksh.ibm.intenship.learningportal.repository.CourseRepository;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import software.amazon.awssdk.core.async.AsyncRequestBody;
-import software.amazon.awssdk.services.s3.S3AsyncClient;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
-import java.nio.ByteBuffer;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/courses")
-@EnableConfigurationProperties(S3ClientConfigurationProperties.class)
 public class CourseController {
     private final CourseRepository repository;
-    private final S3AsyncClient s3AsyncClient;
-    private final S3ClientConfigurationProperties s3config;
 
-    public CourseController(CourseRepository repository, S3AsyncClient s3AsyncClient, S3ClientConfigurationProperties s3config) {
+    public CourseController(CourseRepository repository) {
         this.repository = repository;
-        this.s3AsyncClient = s3AsyncClient;
-        this.s3config = s3config;
     }
 
     @GetMapping
@@ -113,75 +96,6 @@ public class CourseController {
                 }).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("{id}/lectures/{lectureId}")
-    public Mono<ResponseEntity<?>> getLecture(@PathVariable String id,
-                                              @PathVariable String lectureId) {
-        return repository.findById(id)
-                .map(course -> {
-                    if (course.getLectures().containsKey(lectureId))
-                        return ResponseEntity.ok(course.getLecture(lectureId));
-                    else
-                        return ResponseEntity.notFound().build();
-                }).defaultIfEmpty(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("{id}/lectures/{lectureId}")
-    public Mono<ResponseEntity<?>> deleteLecture(@PathVariable String id,
-                                                    @PathVariable String lectureId) {
-        return repository.findById(id)
-                .flatMap(course -> {
-                    if (course.getLectures().containsKey(lectureId)) {
-                        course.getLectures().remove(lectureId);
-                        return repository.save(course)
-                                .then(Mono.just(ResponseEntity.ok().<Void>build()));
-                    } else {
-                        return Mono.just(ResponseEntity.notFound().build());
-                    }
-                }).defaultIfEmpty(ResponseEntity.notFound().build());
-    }
-
-    @PutMapping("{id}/lectures/{lectureId}")
-    public Mono<ResponseEntity<?>> updateLecture(@PathVariable String id,
-                                                       @PathVariable String lectureId,
-                                                       @RequestBody Lecture lecture) {
-        return repository.findById(id)
-                .flatMap(course -> {
-                    if (course.getLectures().containsKey(lectureId)) {
-                        course.putLecture(lectureId, lecture);
-                        return repository.save(course)
-                                .then(Mono.just(ResponseEntity.ok(lecture)));
-                    } else {
-                        return Mono.just(ResponseEntity.notFound().build());
-                    }
-                }).defaultIfEmpty(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping(value = "{id}/lectures/{lectureId}/uploadContent",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public Mono<ResponseEntity<?>> uploadLectureContent(@PathVariable String id,
-                                                        @PathVariable String lectureId,
-                                                        @RequestHeader HttpHeaders headers,
-                                                        @RequestPart("file") Flux<ByteBuffer> body) {
-        String fileKey = UUID.randomUUID().toString();
-        MediaType mediaType = headers.getContentType();
-
-        if (mediaType == null)
-            mediaType = MediaType.APPLICATION_OCTET_STREAM;
-
-        CompletableFuture future = s3AsyncClient
-                .putObject(PutObjectRequest.builder()
-                        .bucket(s3config.getBucket())
-                        .contentLength(headers.getContentLength())
-                        .key(fileKey.toString())
-                        .contentType(mediaType.toString())
-                        .build(), AsyncRequestBody.fromPublisher(body));
-
-        return Mono.fromFuture(future)
-                .map(response -> ResponseEntity.status(HttpStatus.CREATED));
-    }
-
 //    @DeleteMapping("{id}/lectures/{lectureId}/deleteContent")
 //    public Mono<ResponseEntity<?>> deleteContent(@PathVariable String id,
 //                                                 @PathVariable String lectureId) {
@@ -206,4 +120,5 @@ public class CourseController {
 //                    } else return Mono.just(ResponseEntity.notFound().build());
 //                }).defaultIfEmpty(ResponseEntity.notFound().build());
 //    }
+
 }
