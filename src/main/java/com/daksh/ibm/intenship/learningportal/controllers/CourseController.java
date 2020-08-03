@@ -18,11 +18,20 @@ public class CourseController {
         this.repository = repository;
     }
 
+    /**
+     * Returns all the courses saved inside the CourseRepository
+     * @return Flux of Course
+     */
     @GetMapping
     public Flux<Course> getAllCourses() {
         return repository.findAll();
     }
 
+    /**
+     * Returns Course corresponding to id
+     * @param id
+     * @return Mono of ResponseEntity containing the course
+     */
     @GetMapping("{id}")
     public Mono<ResponseEntity<Course>> getCourse(@PathVariable String id) {
         return repository.findById(id)
@@ -30,12 +39,23 @@ public class CourseController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Saves the course inside the CourseRepository
+     * @param course
+     * @return Mono of the course saved
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Course> saveCourse(@RequestBody Course course) {
         return repository.save(course);
     }
 
+    /**
+     * Updates a course corresponding to the id
+     * @param id
+     * @param course
+     * @return Mono of ResponseEntity containing the updated course
+     */
     @PutMapping("{id}")
     public Mono<ResponseEntity<Course>> updateCourse(@PathVariable String id,
                                                      @RequestBody Course course) {
@@ -52,6 +72,11 @@ public class CourseController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Deletes the course corresponding to the id from the CourseRepository
+     * @param id
+     * @return Mono of ResponseEntity<Void> containing the response of the request
+     */
     @DeleteMapping("{id}")
     public Mono<ResponseEntity<Void>> deleteCourse(@PathVariable String id) {
         return repository.findById(id)
@@ -60,11 +85,20 @@ public class CourseController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    /**
+     * deletes all courses stored inside the CourseRepository
+     * @return Mono<Void> signalling successful execution
+     */
     @DeleteMapping
     public Mono<Void> deleteAll() {
         return repository.deleteAll();
     }
 
+    /**
+     * Returns all lectures associated with the Course of the specified id
+     * @param id
+     * @return Flux of Lecture objects
+     */
     @GetMapping("{id}/lectures")
     public Flux<Lecture> getAllLectures(@PathVariable String id) {
         return repository.findById(id)
@@ -73,6 +107,12 @@ public class CourseController {
                 .flatMap(collection -> Flux.fromIterable(collection));
     }
 
+    /**
+     * saves lecture inside course and updates course in the CourseRepository
+     * @param id
+     * @param lecture
+     * @return Mono of ResponseEntity containing the updated course as body
+     */
     @PostMapping("{id}/lectures")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<ResponseEntity<Course>> saveLecture(@PathVariable String id,
@@ -86,6 +126,11 @@ public class CourseController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Delets all lectures from the course with the id specified
+     * @param id
+     * @return Mono of ResponseEntity with body void signaling successful execution
+     */
     @DeleteMapping("{id}/lectures")
     public Mono<ResponseEntity<Void>> deleteAll(@PathVariable String id) {
         return repository.findById(id)

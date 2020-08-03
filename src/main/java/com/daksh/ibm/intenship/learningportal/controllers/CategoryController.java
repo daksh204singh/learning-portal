@@ -22,11 +22,21 @@ public class CategoryController {
         this.courseRepository = courseRepository;
     }
 
+    /**
+     * Returns categories stored in the CategoryRepository as a Flux
+     * @return Flux of Category
+     */
     @GetMapping
     public Flux<Category> getAllCategories() {
         return repository.findAll();
     }
 
+    /**
+     * Returns the Category inside a ResponseEntity
+     * corresponding to the id as a Mono
+     * @param id
+     * @return Mono of ResponseEntity containing the category
+     */
     @GetMapping("{id}")
     public Mono<ResponseEntity<Category>> getCategory(@PathVariable String id) {
         return repository.findById(id)
@@ -34,14 +44,25 @@ public class CategoryController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Saves the category sent by the client inside the CategoryRepository
+     * @param category
+     * @return Mono of category created
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Category> saveCategory(@RequestBody Category category) {
         return repository.save(category);
     }
 
+    /**
+     * Updates category corresponding to the id
+     * @param id
+     * @param category
+     * @return Mono of ResponseEntity containing category
+     */
     @PutMapping("{id}")
-    public Mono<ResponseEntity<Category>> updateProduct(@PathVariable String id,
+    public Mono<ResponseEntity<Category>> updateCategory(@PathVariable String id,
                                                         @RequestBody Category category) {
         return repository.findById(id)
                 .flatMap(existingCategory ->
@@ -53,6 +74,11 @@ public class CategoryController {
     }
 
 
+    /**
+     * Deletes a category corresponding to the id
+     * @param id
+     * @return Mono of ResponseEntity<Void>
+     */
     @DeleteMapping("{id}")
     public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable String id) {
         return repository.findById(id)
@@ -62,6 +88,12 @@ public class CategoryController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Adds a course to the CourseRepository associated with Category corresponding to the id
+     * @param id
+     * @param course
+     * @return Mono of Void ResponseEntity
+     */
     @PostMapping("{id}/courses")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<ResponseEntity<Category>> addCourse(@PathVariable String id, @RequestBody Course course) {
@@ -79,6 +111,11 @@ public class CategoryController {
     }
 
 
+    /**
+     * List all courses containing repository
+     * @param id
+     * @return Flux of course
+     */
     @GetMapping("{id}/courses")
     public Flux<Course> getCourses(@PathVariable String id) {
         return repository.findById(id)

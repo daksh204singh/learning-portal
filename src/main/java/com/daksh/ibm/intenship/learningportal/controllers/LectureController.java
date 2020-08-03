@@ -51,6 +51,12 @@ public class LectureController {
         this.uploadUtility = uploadUtility;
     }
 
+    /**
+     * Returns lecture corresponding to the lectureId
+     * @param id
+     * @param lectureId
+     * @return Mono of ResponseEntity indicating the result of request
+     */
     @GetMapping
     public Mono<ResponseEntity<?>> getLecture(@PathVariable String id,
                                               @PathVariable String lectureId) {
@@ -63,6 +69,12 @@ public class LectureController {
                 }).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Deletes Lecture corresponding to the lectureId
+     * @param id
+     * @param lectureId
+     * @return Mono of ResponseEntity indicating the result of the request
+     */
     @DeleteMapping
     public Mono<ResponseEntity<?>> deleteLecture(@PathVariable String id,
                                                  @PathVariable String lectureId) {
@@ -79,6 +91,13 @@ public class LectureController {
                 }).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Updates lecture corresponding to the lectureId
+     * @param id
+     * @param lectureId
+     * @param lecture
+     * @return Mono of ResponseEntity containing the result of the request
+     */
     @PutMapping
     public Mono<ResponseEntity<?>> updateLecture(@PathVariable String id,
                                                  @PathVariable String lectureId,
@@ -96,7 +115,12 @@ public class LectureController {
     }
 
     /**
-     * Single file upload.
+     * Single file upload
+     * @param id
+     * @param lectureId
+     * @param headers
+     * @param body
+     * @return Mono of ResponseEntity indicating the result of the request.
      */
     @PostMapping("/uploadContent")
     @ResponseStatus(HttpStatus.CREATED)
@@ -158,7 +182,7 @@ public class LectureController {
      * Multipart file upload
      * @param parts
      * @param headers
-     * @return
+     * @return Mono of ResponseEntity indicating the result of request
      */
     @RequestMapping(value = "/uploadContent",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -198,6 +222,13 @@ public class LectureController {
                        .body("Course: " + id + " not found!"));
     }
 
+    /**
+     * Downloads file with the coresponding fileKey
+     * @param id
+     * @param lectureId
+     * @param fileKey
+     * @return Mono of ResponseEntity containing a Flux of ByteBuffer of the file to be downloaded
+     */
     @GetMapping("/content/{fileKey}")
     public Mono<ResponseEntity<Flux<ByteBuffer>>> downloadFile(@PathVariable String id,
                                                                @PathVariable String lectureId,
@@ -232,6 +263,13 @@ public class LectureController {
                 });
     }
 
+    /**
+     * Deletes file from S3 bucket corresponding to the fileKey
+     * @param id
+     * @param lectureId
+     * @param fileKey
+     * @return Mono of ResponseEntity<Void> indicating the result of the request
+     */
     @DeleteMapping("/content/{fileKey}")
     public Mono<ResponseEntity<Void>> deleteContent(@PathVariable String id,
                                                     @PathVariable String lectureId,
@@ -262,6 +300,12 @@ public class LectureController {
                 }).defaultIfEmpty(ResponseEntity.notFound().<Void>build());
     }
 
+    /**
+     * Deletes all files corresponding to the lectureId from S3
+     * @param id
+     * @param lectureId
+     * @return Mono of ResponseEntity<Void> indicating the result of the request.
+     */
     @DeleteMapping("/content")
     public Mono<ResponseEntity<Void>> deleteAllContent(@PathVariable String id,
                                                        @PathVariable String lectureId) {
